@@ -9,7 +9,15 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(req: NextRequest) {
   try {
-    await new Promise<void>((resolve) => corsMiddleware(req, null, resolve));
+    await new Promise<void>((resolve, reject) => {
+      corsMiddleware(req, (response: NextResponse) => {
+        if (response.status === 200) {
+          resolve();
+        } else {
+          reject('CORS Error');
+        }
+      });
+    });
 
     const { username, password } = await req.json();
 
