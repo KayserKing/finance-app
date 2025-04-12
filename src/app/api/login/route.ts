@@ -3,11 +3,14 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { corsMiddleware } from '@/lib/cors';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(req: NextRequest) {
   try {
+    await new Promise<void>((resolve) => corsMiddleware(req, null, resolve));
+
     const { username, password } = await req.json();
 
     if (!username || !password) {
