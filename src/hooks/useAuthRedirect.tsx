@@ -14,7 +14,7 @@ const useAuthRedirect = () => {
     } else {
       router.push(pathname);
     }
-  }, [router]);
+  }, [router, pathname]);
 };
 
 export default useAuthRedirect;

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { Path, UseFormRegister } from 'react-hook-form';
 
 type InputType =
   | 'text'
@@ -15,16 +16,16 @@ type InputType =
   | 'checkbox'
   | 'radio'
   | 'file';
-
-interface TextInputProps {
-  register: any;
-  name: string;
+  
+interface TextInputProps<T extends object> {
+  register: UseFormRegister<T>;
+  name: Path<T>;
   className?: string;
   placeholder: string;
   type: InputType;
 }
 
-const TextInput = ({ register, name, placeholder, className = '', type }: TextInputProps) => {
+const TextInput = <T extends object>({ register, name, placeholder, className = '', type }: TextInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
 

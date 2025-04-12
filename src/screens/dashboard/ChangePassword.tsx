@@ -9,21 +9,30 @@ import { ACCESS_TOKEN_COOKIE } from "@/utils";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
+interface ErrorResponse {
+    response: {
+        data: {
+            message: string;
+        };
+    };
+}
+
 const ChangePassword = () => {
     const router = useRouter()
     const { register, handleSubmit, formState: { errors }, } = useForm<ChangePasswordForm>({
         resolver: yupResolver(changePasswordSchema),
     });
 
-    const {useChangePassword} = useAuthService()
-    const {mutate:changePasswordMutate} = useChangePassword({
+    const { useChangePassword } = useAuthService()
+    const { mutate: changePasswordMutate } = useChangePassword({
         onSuccess: () => {
             toast.success('Password updated successfully, please login again.');
             Cookies.remove(ACCESS_TOKEN_COOKIE);
             router.push('/login');
         },
-        onError: (err: any) => {
-            toast.error(err?.response?.data?.message || 'Something went wrong. Please try again.');
+        onError: (err: unknown) => {
+            const error = err as ErrorResponse;
+            toast.error(error?.response?.data?.message || 'Something went wrong. Please try again.');
         }
     })
 

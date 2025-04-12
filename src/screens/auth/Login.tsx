@@ -13,20 +13,38 @@ type FormData = {
     password: string;
 };
 
+interface LoginResponse {
+    data: {
+        token: string;
+    };
+}
+
+interface ErrorResponse {
+    response: {
+        data: {
+            message: string;
+        };
+    };
+}
+
 const Login = () => {
     const { register, handleSubmit } = useForm<FormData>();
     const router = useRouter();
 
     const { useLogin } = useAuthService();
     const { mutate: loginMutate } = useLogin({
-        onSuccess: (data: any) => {
-            if (data?.data?.token) {
-                Cookies.set(ACCESS_TOKEN_COOKIE, data?.data?.token);
+        onSuccess: (data: unknown) => {
+            const loginData = data as LoginResponse;
+
+            if (loginData?.data?.token) {
+                Cookies.set(ACCESS_TOKEN_COOKIE, loginData?.data?.token);
             }
             router.push('/');
         },
-        onError: (err: any) => {
-            toast.error(err?.response?.data?.message || 'Login failed. Please try again.');
+        onError: (err: unknown) => {
+            const error = err as ErrorResponse;
+
+            toast.error(error?.response?.data?.message || 'Login failed. Please try again.');
         }
     });
 

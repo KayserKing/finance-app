@@ -1,7 +1,13 @@
 
 import { ACCESS_TOKEN_COOKIE } from '@/utils';
-import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
+import axios, { AxiosRequestConfig, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
+
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    skipAuth?: boolean;
+  }
+}
 
 class ApiService {
     private BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -15,7 +21,7 @@ class ApiService {
         },
       });
   
-      this.axiosInstance.interceptors.request.use((config:any) => {
+      this.axiosInstance.interceptors.request.use((config:InternalAxiosRequestConfig) => {
         if (config.skipAuth) return config;
       
         const token = typeof window !== "undefined" ? Cookies.get(ACCESS_TOKEN_COOKIE) : null;
