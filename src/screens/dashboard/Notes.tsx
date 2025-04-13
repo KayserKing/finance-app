@@ -28,7 +28,7 @@ const Notes = () => {
     useEffect(() => {
         const original = data?.data?.notes[0]?.content || '';
         setHasUnsavedChanges(notes !== original);
-    }, [notes, data?.data?.notes[0]?.content, setHasUnsavedChanges]);
+    }, [notes, setHasUnsavedChanges]);
 
 
     const handleSave = () => {

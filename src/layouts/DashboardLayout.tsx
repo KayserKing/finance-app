@@ -11,7 +11,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <div className="fixed bottom-0 w-full sm:static sm:w-24 sm:h-screen z-50">
                 <NavBar />
             </div>
-            <div className="flex-1 px-8">
+            <div className="flex-1 px-8 max-sm:px-4">
                 <div>
                     <Header />
                 </div>

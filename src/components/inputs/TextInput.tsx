@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { Path, UseFormRegister } from 'react-hook-form';
+import { Path, UseFormRegister, UseFormTrigger } from 'react-hook-form';
 
 type InputType =
   | 'text'
@@ -23,19 +23,25 @@ interface TextInputProps<T extends object> {
   className?: string;
   placeholder: string;
   type: InputType;
+  trigger?: UseFormTrigger<T>;
 }
 
-const TextInput = <T extends object>({ register, name, placeholder, className = '', type }: TextInputProps<T>) => {
+const TextInput = <T extends object>({ register,trigger, name, placeholder, className = '', type }: TextInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
 
   return (
     <div className="relative">
       <input
-        {...register(name)}
+        {...register(name, {
+          onChange: () => {
+            trigger?.(name);
+          },
+        })}
         type={isPassword ? (showPassword ? 'text' : 'password') : type}
         className={`bg-white border-[#004aad] border-[0.5px] w-full px-2 h-10 focus:outline-none pr-10 ${className}`}
         placeholder={placeholder}
+        autoComplete='off'
       />
 
       {isPassword && (
