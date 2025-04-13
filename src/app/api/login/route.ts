@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Username and password are required' }, { status: 400 });
     }
 
-    await dbConnect();
+    await dbConnect(process.env.MONGODB_DB_1);
 
     const user = await User.findOne({ username });
     if (!user) {

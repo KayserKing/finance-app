@@ -14,7 +14,7 @@ function isJwtPayload(payload: string | object): payload is JwtPayload {
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect();
+    await dbConnect(process.env.MONGODB_DB_1);
 
     const authHeader = req.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

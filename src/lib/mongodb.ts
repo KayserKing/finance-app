@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = process.env.MONGODB_DB || 'auth';
+const DB_NAME = process.env.MONGODB_DB_1!; 
 
 if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI in your .env.local');
@@ -14,18 +14,18 @@ declare global {
 
 const cached = global.mongoose || { conn: null, promise: null };
 
-async function dbConnect() {
+async function dbConnect(dbName: string = DB_NAME) {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
-      dbName: DB_NAME, // ✅ THIS IS CRUCIAL
+      dbName,
       bufferCommands: false,
-    }).then((mongooseInstance) => mongooseInstance.connection); // Use `connection` property
+    }).then((mongooseInstance) => mongooseInstance.connection);
   }
 
   cached.conn = await cached.promise;
-  console.log('✅ Connected to DB:', cached.conn.name);
+  console.log(`✅ Connected to DB: ${dbName}`);
   return cached.conn;
 }
 

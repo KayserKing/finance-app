@@ -1,3 +1,5 @@
 export const ACCESS_TOKEN_COOKIE = 'access-token-cookie'
 export const LOGIN = 'login'
 export const CHANGE_PASSWORD = 'change-password'
+export const NOTES = 'notes'
+export const GET_NOTES = 'get-notes'

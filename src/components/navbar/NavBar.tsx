@@ -1,4 +1,5 @@
 'use client'
+import { useUnsavedChanges } from "@/context";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +13,16 @@ const navItems = [
 const NavBar = () => {
     const router = useRouter();
 
+    const { hasUnsavedChanges, confirmNavigation } = useUnsavedChanges();
+
+    const handleNavigation = (path: string) => {
+        if (hasUnsavedChanges) {
+          confirmNavigation(() => router.push(path));
+        } else {
+          router.push(path);
+        }
+      };    
+
     return (
         <nav className="sm:pt-8 bg-[#004aad] text-white w-full sm:w-24 h-20 sm:h-screen flex flex-row sm:flex-col items-center justify-around sm:justify-start sm:gap-2 px-4 sm:px-0">
             {navItems.map((item, index) => (
@@ -22,7 +33,7 @@ const NavBar = () => {
                     <button
                         aria-label={item.alt}
                         className="cursor-pointer hover:bg-white/10 rounded-md p-2 sm:w-full sm:h-20 flex items-center justify-center transition"
-                        onClick={() => router.push(`/${item.alt.toLowerCase()}`)}
+                        onClick={() => handleNavigation(`/${item.alt.toLowerCase()}`)}
                     >
                         <Image
                             src={item.src}

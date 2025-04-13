@@ -1,7 +1,9 @@
+'use client'
 import { QueryClientLayout } from "@/layouts";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { UnsavedChangesProvider } from "@/context";
 
 export default function RootLayout({
   children,
@@ -14,7 +16,9 @@ export default function RootLayout({
         className={`antialiased`}
       >
         <QueryClientLayout>
-          {children}
+          <UnsavedChangesProvider>
+            {children}
+          </UnsavedChangesProvider>
         </QueryClientLayout>
         <ToastContainer position="top-right" autoClose={3000} />
       </body>
