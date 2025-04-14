@@ -24,9 +24,10 @@ interface TextInputProps<T extends object> {
   placeholder: string;
   type: InputType;
   trigger?: UseFormTrigger<T>;
+  length?:number;
 }
 
-const TextInput = <T extends object>({ register,trigger, name, placeholder, className = '', type }: TextInputProps<T>) => {
+const TextInput = <T extends object>({ register,trigger, name, placeholder, className = '', type, length }: TextInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
 
@@ -41,6 +42,7 @@ const TextInput = <T extends object>({ register,trigger, name, placeholder, clas
         type={isPassword ? (showPassword ? 'text' : 'password') : type}
         className={`bg-white border-[#004aad] border-[0.5px] w-full px-2 h-10 focus:outline-none pr-10 ${className}`}
         placeholder={placeholder}
+        maxLength={length}
         autoComplete='off'
       />
 

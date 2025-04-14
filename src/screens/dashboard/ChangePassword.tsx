@@ -4,18 +4,10 @@ import { useAuthService } from "@/services";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { ChangePasswordForm, changePasswordSchema } from "./schema";
+import { ChangePasswordForm, changePasswordSchema, ErrorResponse } from "./schema";
 import { ACCESS_TOKEN_COOKIE } from "@/utils";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-
-interface ErrorResponse {
-    response: {
-        data: {
-            message: string;
-        };
-    };
-}
 
 const ChangePassword = () => {
     const router = useRouter()

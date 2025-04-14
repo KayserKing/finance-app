@@ -1,21 +1,40 @@
 'use client'
 import { Button, TextInput, Topic } from "@/components"
 import { useForm } from "react-hook-form";
-import { customerSchema } from "./schema";
+import { customerSchema, ErrorResponse } from "./schema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useDashboardService } from "@/services";
 
 type FormData = {
     customerName: string;
     mobileNumber: string;
-    mobileAltNumber: string;
+    mobileAltNumber?: string;
 };
 
 const AddCustomer = () => {
-    const { register, handleSubmit, trigger, formState:{errors} } = useForm<FormData>({
+    const router = useRouter();
+    const { register, handleSubmit, trigger, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(customerSchema)
     });
+    const { useCreateCustomer } = useDashboardService();
+    const { mutate: createCustomerMutate } = useCreateCustomer({
+        onSuccess: () => { 
+            toast.success('Customer successfully created!')
+            router.push('/add'); 
+        },
+        onError: (err: unknown) => {
+            const error = err as ErrorResponse;
+            toast.error(error?.response?.data?.message || 'Something went wrong. Please try again.');
+        }
+    })
     const onSubmit = (data: FormData) => {
-        console.log('data', data);
+        createCustomerMutate({
+            name: data.customerName,
+            mobileNumber: data.mobileNumber,
+            altMobileNumber: data.mobileAltNumber || ''
+        })
     }
     return <div>
         <Topic title="ADD CUSTOMER" />
@@ -27,19 +46,19 @@ const AddCustomer = () => {
                 )}
             </div>
             <div>
-                <TextInput trigger={trigger} name={'mobileNumber'} placeholder="Enter Mobile Number" register={register} type="text" className="w-full" />
+                <TextInput trigger={trigger} length={10} name={'mobileNumber'} placeholder="Enter Mobile Number" register={register} type="text" className="w-full" />
                 {errors.mobileNumber && (
                     <p className="text-red-500 text-sm">{errors.mobileNumber.message}</p>
                 )}
             </div>
             <div>
-                <TextInput trigger={trigger} name={'mobileAltNumber'} placeholder="Enter Alt Mobile Number (Optional)" register={register} type="text" />
+                <TextInput trigger={trigger} length={10} name={'mobileAltNumber'} placeholder="Enter Alt Mobile Number (Optional)" register={register} type="text" />
                 {errors.mobileAltNumber && (
                     <p className="text-red-500 text-sm">{errors.mobileAltNumber.message}</p>
                 )}
             </div>
             <div className="sm:text-right">
-            <Button name="ADD" type="submit" className="w-full sm:w-24" />
+                <Button name="ADD" type="submit" className="w-full sm:w-24" />
             </div>
         </form>
     </div>

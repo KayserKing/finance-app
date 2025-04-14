@@ -2,7 +2,10 @@
 import { Button, DateInput, RadioInput, SearchDropdownInput, TextInput, Topic } from "@/components"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { transactionSchema } from "./schema";
+import { ErrorResponse, transactionSchema } from "./schema";
+import { useDashboardService } from "@/services";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 type FormData = {
     customerName: string;
@@ -12,26 +15,59 @@ type FormData = {
 };
 
 const AddEntry = () => {
-    const options = ['Apple', 'Banana', 'Cherry', 'Date', 'Grapes'];
+    const router = useRouter()
     const today = new Date().toLocaleDateString('en-CA', {
         timeZone: 'Asia/Kolkata',
-      });
+    });
     const { register, handleSubmit, setValue, trigger, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(transactionSchema),
         defaultValues: {
-            transactionType: 'receive',
-            date:today
+            transactionType: 'RECEIVE',
+            date: today
         },
         mode: 'onChange'
     });
+    const { useCreateLoan, useGetCustomers, useCreateTransactions } = useDashboardService();
+    const { mutate: createLoanMutate } = useCreateLoan({
+        onSuccess: () => {
+            toast.success('Entry successfully added!')
+            router.push('/add')
+        },
+        onError: (err: unknown) => {
+            const error = err as ErrorResponse;
+            toast.error(error?.response?.data?.message || 'Something went wrong. Please try again.');
+        }
+    });
+    const { mutate: createTransactionsMutate } = useCreateTransactions({
+        onSuccess: () => {
+            toast.success('Entry successfully added!')
+            router.push('/add')
+        },
+        onError: (err: unknown) => {
+            const error = err as ErrorResponse;
+            toast.error(error?.response?.data?.message || 'Something went wrong. Please try again.');
+        }
+    })
+    const { data: getCustomers } = useGetCustomers();
+    const customersList = getCustomers?.data?.data?.map((e: {name:string, mobileNumber: string}) => { return e.name + ' - ' + e.mobileNumber }) || [];
     const onSubmit = (data: FormData) => {
-        console.log('data', data);
+        const payload = { 
+            customerName: data.customerName, 
+            loanAmount: data.amount, 
+            loanStartDate: data.date, 
+            transactionType: data.transactionType 
+        }
+        if(data.transactionType === "SEND"){
+            createLoanMutate(payload)
+        } else {
+            createTransactionsMutate(payload)
+        } 
     }
     return <div>
         <Topic title="ADD ENTRY" />
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div>
-                <SearchDropdownInput trigger={trigger} name={'customerName'} options={options} register={register} setValue={setValue} placeholder="Search Customer" />
+                <SearchDropdownInput trigger={trigger} name={'customerName'} options={customersList} register={register} setValue={setValue} placeholder="Search Customer" />
                 {errors.customerName && (
                     <p className="text-red-500 text-sm">{errors.customerName.message}</p>
                 )}

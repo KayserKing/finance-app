@@ -17,28 +17,35 @@ export type ChangePasswordForm = yup.InferType<typeof changePasswordSchema>;
 
 
 export const transactionSchema = yup.object().shape({
-  customerName: yup.string().required('Customer name is required'),
-  amount: yup
-    .number()
-    .typeError('Amount must be a number')
-    .required('Amount is required')
-    .positive('Amount must be greater than 0'),
-  date: yup.string().required('Date is required'),
-  transactionType: yup.string().required('Transaction type is required'),
+    customerName: yup.string().required('Customer name is required'),
+    amount: yup
+        .number()
+        .typeError('Amount must be a number')
+        .required('Amount is required')
+        .positive('Amount must be greater than 0'),
+    date: yup.string().required('Date is required'),
+    transactionType: yup.string().required('Transaction type is required'),
 });
 
 export const customerSchema = yup.object().shape({
     customerName: yup
-      .string()
-      .required('Customer name is required'),
-  
+        .string()
+        .required('Customer name is required'),
     mobileNumber: yup
-      .string()
-      .required('Mobile number is required')
-      .matches(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number'),
-  
-    mobileAltNumber: yup
-      .string()
-      .required('Alternate mobile number is required')
-      .matches(/^[6-9]\d{9}$/, 'Enter a valid 10-digit alternate number'),
-  });
+        .string()
+        .required('Mobile number is required')
+        .matches(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number'),
+    // mobileAltNumber: yup
+    //     .string()
+    //     .matches(/^[6-9]\d{9}$/, 'Enter a valid 10-digit alternate number'),
+});
+
+export type CustomerFormData = yup.InferType<typeof customerSchema>;
+
+export interface ErrorResponse {
+    response: {
+        data: {
+            message: string;
+        };
+    };
+}

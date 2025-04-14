@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Cookies from 'js-cookie'
 import { ACCESS_TOKEN_COOKIE } from "@/utils";
+import { ErrorResponse } from "../dashboard/schema";
 
 type FormData = {
     username: string;
@@ -16,14 +17,6 @@ type FormData = {
 interface LoginResponse {
     data: {
         token: string;
-    };
-}
-
-interface ErrorResponse {
-    response: {
-        data: {
-            message: string;
-        };
     };
 }
 
@@ -43,7 +36,6 @@ const Login = () => {
         },
         onError: (err: unknown) => {
             const error = err as ErrorResponse;
-
             toast.error(error?.response?.data?.message || 'Login failed. Please try again.');
         }
     });

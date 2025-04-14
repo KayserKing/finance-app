@@ -1,7 +1,7 @@
 'use client'
 import { Button, PopUp, Topic } from "@/components"
 import { useUnsavedChanges } from "@/context";
-import useDashboard from "@/services/dashboard/useDashboard";
+import { useDashboardService } from "@/services";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const Notes = () => {
     const [showPopup, setShowPopup] = useState(false);
     const { setHasUnsavedChanges, popupVisible, setPopupVisible, proceedCallback } = useUnsavedChanges();
 
-    const { useNotes, useGetNotes } = useDashboard();
+    const { useNotes, useGetNotes } = useDashboardService();
     const { mutate: notesMutate } = useNotes({
         onSuccess: () => toast.success('Notes updated successfully!'),
         onError: () => toast.error('Something went wrong. Try again.')
@@ -28,7 +28,7 @@ const Notes = () => {
     useEffect(() => {
         const original = data?.data?.notes[0]?.content || '';
         setHasUnsavedChanges(notes !== original);
-    }, [notes, setHasUnsavedChanges]);
+    }, [notes, data?.data?.notes[0]?.content]);
 
 
     const handleSave = () => {

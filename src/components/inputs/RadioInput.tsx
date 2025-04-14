@@ -14,7 +14,7 @@ const RadioInput = <T extends object>({ register, name, className = '' }: RadioI
       <label className="flex items-center gap-2 cursor-pointer text-[#004aad] w-full">
         <input
           type="radio"
-          value="receive"
+          value="RECEIVE"
           {...register(name)}
           className="w-4 h-4 text-[#004aad] accent-[#004aad] focus:ring-[#004aad] cursor-pointer"
         />
@@ -23,7 +23,7 @@ const RadioInput = <T extends object>({ register, name, className = '' }: RadioI
       <label className="flex items-center gap-2 cursor-pointer text-[#004aad] w-full">
         <input
           type="radio"
-          value="send"
+          value="SEND"
           {...register(name)}
           className="w-4 h-4 text-[#004aad] accent-[#004aad] focus:ring-[#004aad] cursor-pointer"
         />
