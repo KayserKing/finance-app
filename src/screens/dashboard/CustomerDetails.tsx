@@ -27,9 +27,14 @@ const CustomerDetails = () => {
     const delayedPaymentsDates = getPaymentsDates(paymentDetails);
     const last10Transactions = transactionDetails?.slice(-10)?.reverse();
     const paidAmountMap = new Map(
-        transactionDetails.map((t:{date:string, amount:number}) => [new Date(t.date).toDateString(), t.amount])
-      );
-      
+        transactionDetails
+            .filter((t: { transactionType: string }) => t.transactionType === 'RECEIVE')
+            .map((t: { date: string; amount: number; paymentType: string }) => [
+                new Date(t.date).toDateString(),
+                { amount: t.amount, type: t.paymentType }
+            ])
+    );
+
     const formatTransactionDate = (date: Date) => date.toDateString()
     const remainingDates = totalLoanDates.filter(
         date => !new Set([
@@ -43,24 +48,31 @@ const CustomerDetails = () => {
         modifiers: Modifiers,
         e: React.MouseEvent | React.KeyboardEvent
       ) => {
-        const paidAmount = paidAmountMap.get(date.toDateString());
-
-        if(modifiers){selectedDates?.shift()} // dummy
+        const paidData = paidAmountMap.get(date.toDateString()) as {
+          amount: number;
+          type: string;
+        };
+      
+        if (modifiers) {
+          selectedDates?.shift(); // dummy
+        }
       
         if ('currentTarget' in e && e.currentTarget instanceof HTMLElement) {
           const rect = e.currentTarget.getBoundingClientRect();
       
           setTooltip({
-            text: paidAmount
-              ? `Paid ₹${paidAmount}`
+            text: paidData
+              ? `Paid ₹${paidData.amount} in ${paidData.type}`
               : 'No payment',
-            x: rect.left + rect.width / 2,
-            y: rect.top - 10,
+            x: rect.left + rect.width / 2 + window.scrollX,
+            y: rect.top - 10 + window.scrollY,
           });
       
           setTimeout(() => setTooltip(null), 2500);
         }
       };
+      
+
 
     useEffect(() => {
         if (isLoading) {
@@ -129,12 +141,14 @@ const CustomerDetails = () => {
                 <div className="w-full">
                     <p className="font-bold">Last 10 Transactions</p>
                     <div className="flex flex-col gap-3 mt-3">
-                        {last10Transactions?.map((e:{amount:number, transactionType:string, date:Date}, index:number) => 
+                        {last10Transactions?.map((e: { amount: number, transactionType: string, date: Date, paymentType: string }, index: number) =>
                             <div key={`${e?.amount}-${index}`}>
-                                <TransactionCard 
-                                    amount={e?.amount || 0} 
-                                    date={formatDate(new Date(e?.date), 'dd-MMM-yyyy')} 
-                                    type={e?.transactionType}  />
+                                <TransactionCard
+                                    amount={e?.amount || 0}
+                                    date={formatDate(new Date(e?.date), 'dd-MMM-yyyy')}
+                                    type={e?.transactionType}
+                                    paymentType={e?.paymentType}
+                                />
                             </div>
                         )}
                     </div>

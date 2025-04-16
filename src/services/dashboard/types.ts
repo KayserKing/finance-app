@@ -13,5 +13,6 @@ export interface TCreateLoanPayload {
     customerName: string,
     loanAmount: number,
     loanStartDate: string,
-    transactionType: string
+    transactionType: string,
+    paymentType: string
 }

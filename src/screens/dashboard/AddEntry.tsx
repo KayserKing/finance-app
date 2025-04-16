@@ -12,6 +12,7 @@ type FormData = {
     amount: number;
     date: string;
     transactionType: string;
+    paymentType: string;
 };
 
 const AddEntry = () => {
@@ -22,7 +23,7 @@ const AddEntry = () => {
     const { register, handleSubmit, setValue, trigger, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(transactionSchema),
         defaultValues: {
-            transactionType: 'RECEIVE',
+            transactionType: 'Receive',
             date: today
         },
         mode: 'onChange'
@@ -55,9 +56,10 @@ const AddEntry = () => {
             customerName: data.customerName, 
             loanAmount: data.amount, 
             loanStartDate: data.date, 
-            transactionType: data.transactionType 
+            transactionType: data.transactionType.toUpperCase(),
+            paymentType: data.paymentType.toUpperCase()
         }
-        if(data.transactionType === "SEND"){
+        if(data.transactionType === "Send"){
             createLoanMutate(payload)
         } else {
             createTransactionsMutate(payload)
@@ -86,7 +88,13 @@ const AddEntry = () => {
                 )}
             </div>
             <div>
-                <RadioInput name={'transactionType'} register={register} />
+                <RadioInput name={'paymentType'} option1="Inhand" option2="Account" register={register} />
+                {errors.transactionType && (
+                    <p className="text-red-500 text-sm">{errors.transactionType.message}</p>
+                )}
+            </div>
+            <div>
+                <RadioInput name={'transactionType'} option1="Receive" option2="Send" register={register} />
                 {errors.transactionType && (
                     <p className="text-red-500 text-sm">{errors.transactionType.message}</p>
                 )}

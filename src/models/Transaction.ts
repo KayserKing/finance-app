@@ -30,6 +30,11 @@ const TransactionSchema: Schema = new Schema(
             enum: ['RECEIVE', 'SEND'],
             required: true,
         },
+        paymentType: {
+            type: String,
+            enum: ['INHAND', 'ACCOUNT'],
+            required: true,
+        },
         date: { 
             type: Date, required: true 
         }

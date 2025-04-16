@@ -11,18 +11,23 @@ export interface IPayment extends Document {
 
 const PaymentSchema: Schema = new Schema(
   {
-    customerId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Customer', 
-        required: true 
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+      required: true
     },
-    loanId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Loan', required: true 
+    loanId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Loan', required: true
     },
     paymentTier: {
       type: String,
       enum: ['HIGH', 'LOW'],
+      required: true,
+    },
+    paymentType: {
+      type: String,
+      enum: ['INHAND', 'ACCOUNT'],
       required: true,
     },
     amount: { type: Number, required: true },

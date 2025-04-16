@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     try {
         await dbConnect(process.env.MONGODB_DB_2);
         const body = await req.json();
-        const { customerName, loanAmount, loanStartDate, transactionType } = body;
+        const { customerName, loanAmount, loanStartDate, transactionType, paymentType } = body;
 
         const [namePart, mobilePart] = customerName.split(' - ').map((str: string) => str.trim());
         const customer = await Customer.findOne({ name: namePart, mobileNumber: mobilePart })
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
             customerId: customer._id,
             loanId: loan._id,
             transactionType,
+            paymentType,
             date: new Date()
         });
 

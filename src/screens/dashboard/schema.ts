@@ -25,6 +25,7 @@ export const transactionSchema = yup.object().shape({
         .positive('Amount must be greater than 0'),
     date: yup.string().required('Date is required'),
     transactionType: yup.string().required('Transaction type is required'),
+    paymentType: yup.string().required('Payment type is required'),
 });
 
 export const customerSchema = yup.object().shape({
