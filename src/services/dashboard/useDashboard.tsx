@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions, useQuery } from "@tanstack/react-query";
-import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, GET_CUSTOMER, GET_NOTES, NOTES } from "@/utils";
+import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, GET_CUSTOMER, GET_CUSTOMER_BY_ID, GET_NOTES, GET_TRANSACTIONS, NOTES } from "@/utils";
 import { TCreateCustomerPayload, TCreateLoanPayload, TNotesPayload } from "./types";
 import dashboardService from "./dashboard";
 
@@ -30,9 +30,17 @@ const useDashboard = () => {
             ...options,
         });
 
-    const useGetCustomers = () => useQuery({
-        queryKey: [GET_CUSTOMER],
-        queryFn: () => dashboardService.getCustomers(),
+    const useGetCustomers = (searchParams:string | null) => useQuery({
+        queryKey: [GET_CUSTOMER, searchParams],
+        queryFn: () => dashboardService.getCustomers(searchParams),
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+    })
+
+    const useGetCustomerById = (id:string) => useQuery({
+        queryKey: [GET_CUSTOMER_BY_ID, id],
+        queryFn: () => dashboardService.getCustomerById(id),
         staleTime: 0,
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
@@ -52,13 +60,23 @@ const useDashboard = () => {
             ...options,
         });
 
+    const useGetTransactions = (params: string) => useQuery({
+        queryKey: [GET_TRANSACTIONS],
+        queryFn: () => dashboardService.getTransactions(params),
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+    })
+
     return {
         useNotes,
         useGetNotes,
         useCreateCustomer,
         useGetCustomers,
         useCreateLoan,
-        useCreateTransactions
+        useCreateTransactions,
+        useGetTransactions,
+        useGetCustomerById
     };
 };
 

@@ -1,5 +1,7 @@
-const Customers = () => {
-    return <div>Customers</div>
+import { Customers } from "@/screens";
+
+const CustomersPage = () => {
+    return <Customers />
 }
 
-export default Customers;
+export default CustomersPage;

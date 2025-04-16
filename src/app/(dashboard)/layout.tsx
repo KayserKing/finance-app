@@ -7,6 +7,6 @@ export default function DashboardSectionLayout({
 }: {
     children: React.ReactNode;
 }) {
-    useAuthRedirect();
+    useAuthRedirect(); 
     return <DashboardLayout>{children}</DashboardLayout>;
 }

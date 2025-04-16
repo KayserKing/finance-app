@@ -48,7 +48,7 @@ const AddEntry = () => {
             toast.error(error?.response?.data?.message || 'Something went wrong. Please try again.');
         }
     })
-    const { data: getCustomers } = useGetCustomers();
+    const { data: getCustomers } = useGetCustomers('');
     const customersList = getCustomers?.data?.data?.map((e: {name:string, mobileNumber: string}) => { return e.name + ' - ' + e.mobileNumber }) || [];
     const onSubmit = (data: FormData) => {
         const payload = { 

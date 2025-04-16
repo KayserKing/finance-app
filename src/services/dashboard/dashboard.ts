@@ -14,8 +14,12 @@ class DashboardService extends ApiService {
         return this.post('customer/create', payload)
     }
 
-    getCustomers = () => {
-        return this.get('customer')
+    getCustomers = (searchParams:string | null) => {
+        return this.get(`customer?${searchParams}`)
+    }
+
+    getCustomerById = (id:string) => {
+        return this.get(`customer/${id}`)
     }
 
     createLoan = (payload:TCreateLoanPayload) => {
@@ -24,6 +28,10 @@ class DashboardService extends ApiService {
 
     createTransaction = (payload: TCreateLoanPayload) => {
         return this.post(`transactions/create`, payload)
+    }
+
+    getTransactions = (searchParams: string) => {
+        return this.get(`transactions?${searchParams}`)
     }
 }
 

@@ -46,7 +46,13 @@ export async function POST(req: Request) {
             });
         } else {
             const paymentTier = amount > loan.dailyAmountToBePaid ? 'HIGH' : 'LOW';
-
+            await Transaction.create({
+                amount,
+                customerId: customer._id,
+                loanId: loan._id,
+                transactionType,
+                date,
+            });
             await Payment.create({
                 amount,
                 customerId: customer._id,
@@ -55,7 +61,7 @@ export async function POST(req: Request) {
                 date,
             });
         }
-        
+
         customer.amountPaid = (customer.amountPaid || 0) + amount;
         customer.lastPaidDate = new Date(date);
         await customer.save();
