@@ -1,3 +1,5 @@
+import { isSameDay, isWithinInterval } from 'date-fns';
+
 export const formatDate = (date: Date, format: 'dd-mm-yyyy' | 'dd-MMM-yyyy') => {
   const day = String(date.getDate()).padStart(2, '0');
   const monthNumeric = String(date.getMonth() + 1).padStart(2, '0');
@@ -47,4 +49,60 @@ export function getDatesFromLoanStartToToday(loanStartDate: string | Date): Date
   }
 
   return dates;
+}
+
+type Transaction = {
+  date: string;
+  amount: number;
+  transactionType: 'RECEIVE' | 'SEND';
+};
+
+type Loan = {
+  dailyAmountToBePaid: number;
+  loanStartDate: string;
+  loanEndDate: string;
+};
+
+export function calculateTransactionSummary(
+  transactions: Transaction[],
+  loans: Loan[],
+  fromDate: Date,
+  toDate: Date
+) {
+  const allDays: Date[] = [];
+  const currentDate = new Date(fromDate);
+
+  while (currentDate <= toDate) {
+    allDays.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  let yetToReceiveAmount = 0;
+  let receivedAmount = 0;
+
+  for (const day of allDays) {
+    const activeLoans = loans.filter((loan) =>
+      isWithinInterval(day, {
+        start: new Date(loan.loanStartDate),
+        end: new Date(loan.loanEndDate),
+      })
+    );
+
+    const receiveTransactions = transactions.filter(
+      (tx) =>
+        tx.transactionType === 'RECEIVE' &&
+        isSameDay(new Date(tx.date), day)
+    );
+
+    const dayExpected = activeLoans.reduce((sum, loan) => sum + loan.dailyAmountToBePaid, 0);
+    const dayReceived = receiveTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+
+    yetToReceiveAmount += dayExpected;
+    receivedAmount += dayReceived;
+  }
+
+  return {
+    receivedAmount,
+    yetToReceiveAmount,
+  };
 }

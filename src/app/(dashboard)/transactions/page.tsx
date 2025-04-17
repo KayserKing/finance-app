@@ -1,5 +1,7 @@
-const Transactions = () => {
-    return <div>Transactions</div>
+import { Transactions } from "@/screens"
+
+const TransactionsPage = () => {
+    return <Transactions />
 }
 
-export default Transactions
+export default TransactionsPage

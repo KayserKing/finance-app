@@ -18,6 +18,10 @@ class DashboardService extends ApiService {
         return this.get(`customer?${searchParams}`)
     }
 
+    getTransactionsSummary = () => {
+        return this.get(`transactions/summary`)
+    }
+
     getCustomerById = (id:string) => {
         return this.get(`customer/${id}`)
     }
