@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { Path, PathValue, UseFormRegister, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 
@@ -62,9 +63,10 @@ const SearchDropdownInput = <T extends object>({
         }}
         onFocus={() => setShowDropdown(true)}
         placeholder={placeholder}
-        className={`bg-white border-[#004aad] border-[0.5px] w-full px-2 h-10 focus:outline-none pr-10 text-[#004aad] ${className}`}
+        className={`bg-white border-[#004aad] border-[0.5px] w-full px-10 h-10 focus:outline-none pr-10 text-[#004aad] ${className}`}
         autoComplete="off"
       />
+      <Image width={16} height={16} src={'/assets/search.png'} alt='search' className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none' />
 
       {showDropdown && filteredOptions.length > 0 && (
         <ul ref={dropdownRef} className="absolute z-10 w-full max-h-40 overflow-y-auto bg-white shadow">

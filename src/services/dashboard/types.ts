@@ -16,3 +16,9 @@ export interface TCreateLoanPayload {
     transactionType: string,
     paymentType: string
 }
+
+export interface TDownloadReportPayload {
+    type: string;
+    customerId: string;
+    range: string;
+}

@@ -1,5 +1,5 @@
 import ApiService from '../api';
-import { TCreateCustomerPayload, TCreateLoanPayload, TNotesPayload } from './types';
+import { TCreateCustomerPayload, TCreateLoanPayload, TDownloadReportPayload, TNotesPayload } from './types';
 
 class DashboardService extends ApiService {
     notes = (payload:TNotesPayload) => {
@@ -36,6 +36,14 @@ class DashboardService extends ApiService {
 
     getTransactions = (searchParams: string) => {
         return this.get(`transactions?${searchParams}`)
+    }
+
+    downloadReport = (payload: TDownloadReportPayload) => {
+        return this.post(`reports/download`, payload)
+    }
+
+    deleteReport = () => {
+        return this.post(`reports/delete`)
     }
 }
 

@@ -1,5 +1,7 @@
-const Reports = () => {
-    return <div>Reports</div>
+import { Reports } from "@/screens"
+
+const ReportsPage = () => {
+    return <Reports />
 }
 
-export default Reports
+export default ReportsPage

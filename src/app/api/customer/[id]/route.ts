@@ -9,7 +9,7 @@ export async function GET(
   req: NextRequest
 ) {
   try {
-    await dbConnect(process.env.MONGODB_DB_2);
+    await dbConnect(process.env.MONGODB_DB_2!);
 
     const url = new URL(req.url);
     const pathSegments = url.pathname.split('/');

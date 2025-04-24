@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
-        await dbConnect(process.env.MONGODB_DB_2);
+        await dbConnect(process.env.MONGODB_DB_2!);
         const body = await req.json();
         const { customerName, loanAmount, loanStartDate, transactionType, paymentType } = body;
 

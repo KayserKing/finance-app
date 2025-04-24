@@ -11,7 +11,7 @@ import { calculateTransactionSummary } from '@/utils';
 export async function GET() {
   try {
     // Connect to the database
-    await dbConnect(process.env.MONGODB_DB_2);
+    await dbConnect(process.env.MONGODB_DB_2!);
 
     // Fetch all active customers
     const loansDetails = Loan.find();

@@ -6,7 +6,7 @@ import { FilterQuery } from 'mongoose';
 
 export async function GET(req: Request) {
   try {
-    await dbConnect(process.env.MONGODB_DB_2);
+    await dbConnect(process.env.MONGODB_DB_2!);
 
     const { searchParams } = new URL(req.url);
 

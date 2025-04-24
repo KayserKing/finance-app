@@ -1,34 +1,22 @@
-/* eslint-disable no-var */
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = process.env.MONGODB_DB_1!; 
+export default async function dbConnect(dbName?: string) {
+  if (mongoose.connection.readyState === 1) return; // already connected
 
-if (!MONGODB_URI) {
-  throw new Error('Please define MONGODB_URI in your .env.local');
-}
+  const uri = process.env.MONGODB_URI!;
+  const fullUri = dbName ? `${uri}/${dbName}` : uri;
 
-declare global {
-  var mongoose: { conn: mongoose.Connection | null; promise: Promise<mongoose.Connection> | null };
-}
-
-const cached = global.mongoose || { conn: null, promise: null };
-
-async function dbConnect(dbName: string = DB_NAME) {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      dbName,
-      bufferCommands: false,
-    }).then((mongooseInstance) => mongooseInstance.connection);
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(fullUri, {
+      dbName, // optional, based on your usage
+    });
   }
 
-  cached.conn = await cached.promise;
-  console.log(`✅ Connected to DB: ${dbName}`);
-  return cached.conn;
+  // Wait until the connection is fully open
+  await new Promise((resolve, reject) => {
+    if (mongoose.connection.readyState === 1) return resolve(true);
+
+    mongoose.connection.once('open', () => resolve(true));
+    mongoose.connection.once('error', (err) => reject(err));
+  });
 }
-
-global.mongoose = cached;
-
-export default dbConnect;

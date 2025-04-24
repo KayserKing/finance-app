@@ -1,11 +1,12 @@
 import { useMutation, UseMutationOptions, useQuery } from "@tanstack/react-query";
-import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, GET_CUSTOMER, GET_CUSTOMER_BY_ID, GET_NOTES, GET_TRANSACTION_SUMMARY, GET_TRANSACTIONS, NOTES } from "@/utils";
-import { TCreateCustomerPayload, TCreateLoanPayload, TNotesPayload } from "./types";
+import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, DOWNLOAD_REPORT, GET_CUSTOMER, GET_CUSTOMER_BY_ID, GET_NOTES, GET_TRANSACTION_SUMMARY, GET_TRANSACTIONS, NOTES } from "@/utils";
+import { TCreateCustomerPayload, TCreateLoanPayload, TDownloadReportPayload, TNotesPayload } from "./types";
 import dashboardService from "./dashboard";
 
 type UseNotesOptions = UseMutationOptions<unknown, Error, TNotesPayload>;
 type UseCreateCustomerOptions = UseMutationOptions<unknown, Error, TCreateCustomerPayload>;
 type UseCreateLoanOptions = UseMutationOptions<unknown, Error, TCreateLoanPayload>;
+type UseDownloadReportOptions = UseMutationOptions<unknown, Error, TDownloadReportPayload>;
 
 const useDashboard = () => {
     const useNotes = (options?: UseNotesOptions) =>
@@ -30,7 +31,7 @@ const useDashboard = () => {
             ...options,
         });
 
-    const useGetCustomers = (searchParams:string | null) => useQuery({
+    const useGetCustomers = (searchParams: string | null) => useQuery({
         queryKey: [GET_CUSTOMER, searchParams],
         queryFn: () => dashboardService.getCustomers(searchParams),
         staleTime: 0,
@@ -46,7 +47,7 @@ const useDashboard = () => {
         refetchOnReconnect: true,
     })
 
-    const useGetCustomerById = (id:string) => useQuery({
+    const useGetCustomerById = (id: string) => useQuery({
         queryKey: [GET_CUSTOMER_BY_ID, id],
         queryFn: () => dashboardService.getCustomerById(id),
         staleTime: 0,
@@ -76,6 +77,19 @@ const useDashboard = () => {
         refetchOnReconnect: true,
     })
 
+    const useDownloadReport = (options?: UseDownloadReportOptions) =>
+        useMutation({
+            mutationKey: [DOWNLOAD_REPORT],
+            mutationFn: (payload: TDownloadReportPayload) => dashboardService.downloadReport(payload),
+            ...options,
+        });
+
+    const useDownloadDelete = () =>
+        useMutation({
+            mutationKey: [DOWNLOAD_REPORT],
+            mutationFn: () => dashboardService.deleteReport(),
+        });
+
     return {
         useNotes,
         useGetNotes,
@@ -85,7 +99,9 @@ const useDashboard = () => {
         useCreateTransactions,
         useGetTransactions,
         useGetCustomerById,
-        useGetTransactionsSummary
+        useGetTransactionsSummary,
+        useDownloadReport,
+        useDownloadDelete
     };
 };
 

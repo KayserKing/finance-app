@@ -4,7 +4,7 @@ import Note from '@/models/Note';
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect(process.env.MONGODB_DB_2);
+    await dbConnect(process.env.MONGODB_DB_2!);
 
     const { content, noteId } = await req.json();
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    await dbConnect(process.env.MONGODB_DB_2);
+    await dbConnect(process.env.MONGODB_DB_2!);
 
     const notes = await Note.find().sort({ createdAt: -1 });
 
