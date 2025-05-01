@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
- // Your utility function to calculate received and yetToReceiveAmount
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, startOfDay, endOfDay } from 'date-fns';
 
 import dbConnect from '@/lib/mongodb';
 import Customer from '@/models/Customer';
@@ -15,7 +14,7 @@ export async function GET() {
 
     // Fetch all active customers
     const loansDetails = Loan.find();
-    if(!loansDetails){}
+    if (!loansDetails) {}
     const activeCustomers = await Customer.find({ active: true }).populate('loanIds');
     if (!activeCustomers || activeCustomers.length === 0) {
       return NextResponse.json({ message: 'No active customers found' }, { status: 404 });
@@ -40,8 +39,8 @@ export async function GET() {
 
         switch (period) {
           case 'TODAY':
-            startDate = new Date();
-            endDate = new Date();
+            startDate = startOfDay(new Date());
+            endDate = endOfDay(new Date());
             break;
           case 'THIS WEEK':
             startDate = startOfWeek(new Date());
@@ -58,6 +57,10 @@ export async function GET() {
           default:
             return NextResponse.json({ message: 'Invalid period' }, { status: 400 });
         }
+
+        // Convert to UTC manually
+        startDate = new Date(startDate.toISOString()); // Ensures it’s in UTC
+        endDate = new Date(endDate.toISOString()); // Ensures it’s in UTC
 
         const { receivedAmount, yetToReceiveAmount } = calculateTransactionSummary(
           transactions,
