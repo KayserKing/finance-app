@@ -6,6 +6,14 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DayPicker, getDefaultClassNames, Modifiers } from "react-day-picker";
 import "react-day-picker/style.css";
+import { toast } from "react-toastify";
+import { ErrorResponse } from "./schema";
+
+type ReportResponse = {
+    data: {
+        filePath: string;
+    };
+};
 
 const CustomerDetails = () => {
     const pathname = usePathname();
@@ -15,7 +23,26 @@ const CustomerDetails = () => {
     const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
     const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
-    const { useGetCustomerById } = useDashboardService();
+    const { useGetCustomerById, useDownloadReport, useDownloadDelete } = useDashboardService();
+    const {mutate:downloadDeleteMutate} = useDownloadDelete()
+    const { mutate: downloadReportMutate } = useDownloadReport({
+            onSuccess: async (res: unknown) => {
+                const resData = res as ReportResponse;
+                const link = document.createElement('a');
+                link.href = resData?.data?.filePath;
+                link.setAttribute('download', 'report.csv');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                downloadDeleteMutate();
+                toast.success('Report download successful')
+            },
+            onError: (error: unknown) => {
+                const err = error as ErrorResponse;
+                toast.error(err?.response?.data?.message || 'Something went wrong. Please try again.');
+                console.error('Download error:', error);
+            }
+          });
     const { data: getCustomerDetails, isLoading } = useGetCustomerById(customerId);
     const customerDetails = getCustomerDetails?.data?.data?.customer || {}
     const transactionDetails = getCustomerDetails?.data?.data?.transactions || []
@@ -90,6 +117,16 @@ const CustomerDetails = () => {
         );
     }
 
+    const handleDownloadClick = () => {
+        downloadReportMutate({
+            type: 'CUSTOMER BASED',
+            customerId: `${customerDetails?.name} - ${customerDetails?.mobileNumber}`,
+            range: 'FULL',
+        })
+    }
+
+    const handleCallClick = () => window.location.href = `tel:+91${customerDetails?.mobileNumber}`
+
     return (
         <div className="max-sm:mb-24">
             <Topic title="CUSTOMERS" />
@@ -101,9 +138,11 @@ const CustomerDetails = () => {
                 yetToReceiveAmount={loanDetails?.loanAmount - customerDetails?.amountPaid || 0}
             />
             <div className="relative flex flex-row max-sm:justify-around justify-end sm:gap-4 pb-4 bg-white max-sm:w-screen max-sm:ml-[-16px] sm:pr-6">
-                <Button name="CALL" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px] !py-1 sm:!py-2" />
-                <Button name="MESSAGE" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px]  !py-1" />
-                <Button name="DOWNLOAD" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px]  !py-1" />
+                <Button handleClick={handleCallClick} name="CALL" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px] !py-1 sm:!py-2" />
+                <a href={`sms:+91${customerDetails?.mobileNumber}?body=Hello%20${customerDetails?.name},%0AYou%20have%20missed%20your%20payment,%20please%20pay%20now!!`}>
+                    <Button name="MESSAGE" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px]  !py-1" />
+                </a>
+                <Button handleClick={handleDownloadClick} name="DOWNLOAD" type="button" className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px]  !py-1" />
             </div>
             <div className="flex flex-col sm:flex-row w-full mt-2">
                 <div className="flex justify-center w-full sm:mt-10">
