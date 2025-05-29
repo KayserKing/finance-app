@@ -14,8 +14,12 @@ export async function GET(req: Request) {
     const period = searchParams.get('period'); // "day", "week", "month", "year"
     const filters = searchParams.getAll('filters');
 
+    const start = searchParams.get('start');
+    const end = searchParams.get('end');
+
     const filter: FilterQuery<typeof Transaction> = {};
 
+    // Apply type filters
     if (filters.length > 0) {
       const upperFilters = filters.map(f => f.toUpperCase());
 
@@ -34,8 +38,20 @@ export async function GET(req: Request) {
       }
     }
 
-    // Date filter based on period
-    if (period) {
+    // Date range override
+    if (start && end) {
+      const fromDate = new Date(start);
+      const toDate = new Date(end);
+      toDate.setHours(23, 59, 59, 999); // Include full end day
+      filter.date = { $gte: fromDate, $lte: toDate };
+    } else if (start) {
+      const specificDate = new Date(start);
+      const nextDay = new Date(specificDate);
+      nextDay.setDate(specificDate.getDate() + 1);
+      filter.date = { $gte: specificDate, $lt: nextDay };
+    }
+    // If no custom range, apply "period" filter
+    else if (period) {
       let startDate: Date | null = null;
       const now = new Date();
       const localNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -61,15 +77,16 @@ export async function GET(req: Request) {
       }
     }
 
+    // Filter by customer name
     if (customerName) {
-    const customers = await Customer.find({
+      const customers = await Customer.find({
         name: { $regex: customerName, $options: 'i' }
       });
-      
+
       if (!customers || customers.length === 0) {
         return NextResponse.json({ message: 'No matching customers found' }, { status: 404 });
       }
-      
+
       const customerIds = customers.map(c => c._id);
       filter.customerId = { $in: customerIds };
     }

@@ -35,10 +35,10 @@ const MultiSelectFilterDropdown = ({
   return (
     <div className="relative inline-block" ref={ref}>
       <button
-        className="px-2 py-2 rounded-md hover:bg-gray-300 transition cursor-pointer"
+        className="px-2 py-2 rounded-md hover:bg-gray-300 transition cursor-pointer w-10"
         onClick={() => setShow((prev) => !prev)}
       >
-        <Image alt='filter' src={'/assets/filter.png'} width={24} height={24} className='' />
+        <Image alt='filter' src={'/assets/filter.png'} width={20} height={20} className='' />
       </button>
 
       {show && (

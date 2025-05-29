@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search');
-    const filter = searchParams.get('filter'); // all, today, unpaid
+    const filter = searchParams.get('filter'); // all, paid, unpaid
 
     const loans = Loan.find();
     if(!loans){}
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
       ];
     }
 
-    if (filter === 'today' || filter === 'unpaid') {
+    if (filter === 'unpaid') {
       query.active = true;
 
       const today = new Date();
@@ -49,6 +49,22 @@ export async function GET(req: Request) {
           { lastPaidDate: { $exists: false } }
         ];
       }
+    }
+
+    if (filter === 'paid') {
+      query.active = true;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      query.lastPaidDate = {
+        $gte: today,
+        $lt: tomorrow
+      };
+
     }
 
     const customers = await Customer.find(query)

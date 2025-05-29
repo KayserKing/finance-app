@@ -2,7 +2,7 @@
 
 const CustomerFilterTabs = ({selected, setSelected}:{selected:string, setSelected:(value:string) => void;}) => {
 
-    const options = ['ALL', 'TODAY', 'UNPAID'];
+    const options = ['ALL', 'PAID', 'UNPAID'];
 
     return (
         <div className="inline-flex border border-[#004aad] rounded-lg overflow-hidden max-sm:text-[10px] text-sm font-medium">
