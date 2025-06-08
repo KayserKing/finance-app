@@ -9,7 +9,10 @@ import { ErrorResponse } from "./schema";
 type ReportResponse = {
   data: {
     filePath: string;
+    blob: () => Promise<Blob>;
   };
+  ok: boolean;
+  text: () => Promise<string>;
 };
 
 const Reports = () => {
@@ -17,7 +20,7 @@ const Reports = () => {
   const [range, setRange] = useState<string>("");
   const [query, setQuery] = useState<string>("");
 
-  const { useGetCustomers, useDownloadReport, useDownloadDelete } =
+  const { useGetCustomers, useDownloadReport } =
     useDashboardService();
   const { data: getCustomers } = useGetCustomers("");
 
@@ -27,22 +30,24 @@ const Reports = () => {
         `${e.name} - ${e.mobileNumber}`
     ) || [];
 
-  const { mutate: downloadDeleteMutate } = useDownloadDelete();
+  // const { mutate: downloadDeleteMutate } = useDownloadDelete();
 
   const { mutate: downloadReportMutate } = useDownloadReport({
     onSuccess: async (res: unknown) => {
       const resData = res as ReportResponse;
 
-      if (!resData?.data?.filePath) {
-        toast.error("Download link missing.");
-        return;
-      }
+      const blob = new Blob([resData.data as unknown as string], { type: 'text/csv' });
+      console.log("Download response:", resData);
 
-      // ✅ Open file in new tab — works better on mobile
-      window.open(resData.data.filePath, "_blank");
-
-      downloadDeleteMutate();
-      toast.success("Report download successful");
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'report.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success('Report downloaded successfully');
     },
     onError: (error: unknown) => {
       const err = error as ErrorResponse;
@@ -88,7 +93,7 @@ const Reports = () => {
         )}
         <SelectOptionsInput
           onChange={setRange}
-          options={["THIS MONTH", "LAST 3 MONTHS", "FULL"]}
+          options={["THIS MONTH", "TODAY", "FULL"]}
           value={range}
           placeholder="Select Range"
         />
