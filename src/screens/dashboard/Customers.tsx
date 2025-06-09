@@ -58,6 +58,7 @@ const Customers = () => {
                   onClick={() => router.push(`/customers/${e._id}`)}
                 >
                   <CustomerCard
+                    customerId={e._id}
                     customerName={e.name}
                     customerNumber={e.mobileNumber}
                     date={

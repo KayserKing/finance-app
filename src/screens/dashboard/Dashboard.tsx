@@ -53,6 +53,7 @@ const Dashboard = () => {
                 onClick={() => router.push(`/customers/${e._id}`)}
               >
                 <CustomerCard
+                  customerId={e._id}
                   key={`${e.customerName}-${index}`}
                   customerName={e.name}
                   customerNumber={e?.mobileNumber}

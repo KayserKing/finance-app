@@ -23,9 +23,15 @@ const Transactions = () => {
     endOfWeek.setDate(today.getDate() + (7 - today.getDay())); // Sunday
 
     const getMonthLabel = (date: Date) =>
-        new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date).toUpperCase();
+      new Intl.DateTimeFormat("en-US", { month: "short" })
+        .format(date)
+        .toUpperCase();
 
     const getYearLabel = (date: Date) => date.getFullYear().toString();
+
+    function formatAmount(amount: number) {
+      return Number(amount % 1 === 0 ? amount : amount?.toFixed(2));
+    }
 
     return <div className="relative">
         <Topic title="TRANSACTIONS" />
@@ -33,27 +39,27 @@ const Transactions = () => {
         <div className="flex flex-col gap-4 mb-24">
             <TransactionBoard
                 date={formatDate(today, 'dd-MMM-yyyy')}
-                receivedAmount={todaySummary?.receivedAmount || 0}
+                receivedAmount={formatAmount(todaySummary?.receivedAmount) || 0}
                 title="TODAY"
-                yetToReceiveAmount={todaySummary?.yetToReceiveAmount || 0}
+                yetToReceiveAmount={formatAmount(todaySummary?.yetToReceiveAmount) || 0}
             />
             <TransactionBoard
                 date={`${formatDate(startOfWeek, 'dd-MMM-yyyy')} - ${formatDate(endOfWeek, 'dd-MMM-yyyy')}`}
-                receivedAmount={weekSummary?.receivedAmount || 0}
+                receivedAmount={formatAmount(weekSummary?.receivedAmount) || 0}
                 title="THIS WEEK"
-                yetToReceiveAmount={weekSummary?.yetToReceiveAmount || 0}
+                yetToReceiveAmount={formatAmount(weekSummary?.yetToReceiveAmount) || 0}
             />
             <TransactionBoard
                 date={getMonthLabel(today)}
-                receivedAmount={monthSummary?.receivedAmount || 0}
+                receivedAmount={formatAmount(monthSummary?.receivedAmount) || 0}
                 title="THIS MONTH"
-                yetToReceiveAmount={monthSummary?.yetToReceiveAmount || 0}
+                yetToReceiveAmount={formatAmount(monthSummary?.yetToReceiveAmount) || 0}
             />
             <TransactionBoard
                 date={getYearLabel(today)}
-                receivedAmount={yearSummary?.receivedAmount || 0}
+                receivedAmount={formatAmount(yearSummary?.receivedAmount) || 0}
                 title="THIS YEAR"
-                yetToReceiveAmount={yearSummary?.yetToReceiveAmount || 0}
+                yetToReceiveAmount={formatAmount(yearSummary?.yetToReceiveAmount) || 0}
             />
         </div>
     </div>

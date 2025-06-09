@@ -53,3 +53,43 @@ export async function GET(
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    await dbConnect();
+
+    const url = new URL(req.url);
+    const pathSegments = url.pathname.split("/");
+    const customerId = pathSegments[pathSegments.length - 1];
+
+    // Check if customer exists
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return NextResponse.json(
+        { success: false, message: "Customer not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete related records
+    await Promise.all([
+      Loan.deleteMany({ customerId }),
+      Transaction.deleteMany({ customerId }),
+      Payment.deleteMany({ customerId }),
+    ]);
+
+    // Delete customer
+    await Customer.findByIdAndDelete(customerId);
+
+    return NextResponse.json({
+      success: true,
+      message: "Customer and all related records deleted",
+    });
+  } catch (error) {
+    console.error("Error deleting customer:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

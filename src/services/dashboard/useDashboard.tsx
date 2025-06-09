@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions, useQuery } from "@tanstack/react-query";
-import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, DOWNLOAD_REPORT, GET_CUSTOMER, GET_CUSTOMER_BY_ID, GET_NOTES, GET_TRANSACTION_SUMMARY, GET_TRANSACTIONS, NOTES } from "@/utils";
+import { CREATE_CUSTOMER, CREATE_LOAN, CREATE_TRANSACTIONS, DELETE_CUSTOMER, DOWNLOAD_REPORT, GET_CUSTOMER, GET_CUSTOMER_BY_ID, GET_NOTES, GET_TRANSACTION_SUMMARY, GET_TRANSACTIONS, NOTES } from "@/utils";
 import { TCreateCustomerPayload, TCreateLoanPayload, TDownloadReportPayload, TNotesPayload } from "./types";
 import dashboardService from "./dashboard";
 
@@ -7,6 +7,7 @@ type UseNotesOptions = UseMutationOptions<unknown, Error, TNotesPayload>;
 type UseCreateCustomerOptions = UseMutationOptions<unknown, Error, TCreateCustomerPayload>;
 type UseCreateLoanOptions = UseMutationOptions<unknown, Error, TCreateLoanPayload>;
 type UseDownloadReportOptions = UseMutationOptions<unknown, Error, TDownloadReportPayload>;
+type UseDeleteCustomerOptions = UseMutationOptions<unknown, Error, { id: string }>;
 
 const useDashboard = () => {
     const useNotes = (options?: UseNotesOptions) =>
@@ -32,7 +33,7 @@ const useDashboard = () => {
         });
 
     const useGetCustomers = (searchParams: string | null) => useQuery({
-        queryKey: [GET_CUSTOMER, searchParams],
+        queryKey: [GET_CUSTOMER, searchParams, DELETE_CUSTOMER],
         queryFn: () => dashboardService.getCustomers(searchParams),
         staleTime: 0,
         refetchOnWindowFocus: true,
@@ -90,6 +91,13 @@ const useDashboard = () => {
             mutationFn: () => dashboardService.deleteReport(),
         });
 
+    const useDeleteCustomer = (options?:UseDeleteCustomerOptions) =>
+        useMutation({
+            mutationKey: [DELETE_CUSTOMER, GET_CUSTOMER],
+            mutationFn: ({id}:{id:string}) => dashboardService.deleteCustomer(id),
+            ...options,
+        });
+
     return {
         useNotes,
         useGetNotes,
@@ -101,7 +109,8 @@ const useDashboard = () => {
         useGetCustomerById,
         useGetTransactionsSummary,
         useDownloadReport,
-        useDownloadDelete
+        useDownloadDelete,
+        useDeleteCustomer
     };
 };
 

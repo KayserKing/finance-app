@@ -32,30 +32,34 @@ const CustomerDetails = () => {
   } | null>(null);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
-  const { useGetCustomerById, useDownloadReport, useDownloadDelete } =
+  const { useGetCustomerById, useDownloadReport } =
     useDashboardService();
-  const { mutate: downloadDeleteMutate } = useDownloadDelete();
+  // const { mutate: downloadDeleteMutate } = useDownloadDelete();
   const { mutate: downloadReportMutate } = useDownloadReport({
-    onSuccess: async (res: unknown) => {
-      const resData = res as ReportResponse;
-      const link = document.createElement("a");
-      link.href = resData?.data?.filePath;
-      link.setAttribute("download", "report.csv");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      downloadDeleteMutate();
-      toast.success("Report download successful");
-    },
-    onError: (error: unknown) => {
-      const err = error as ErrorResponse;
-      toast.error(
-        err?.response?.data?.message ||
-          "Something went wrong. Please try again."
-      );
-      console.error("Download error:", error);
-    },
-  });
+      onSuccess: async (res: unknown) => {
+        const resData = res as ReportResponse;
+  
+        const blob = new Blob([resData.data as unknown as string], { type: 'text/csv' });
+  
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'report.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        toast.success('Report downloaded successfully');
+      },
+      onError: (error: unknown) => {
+        const err = error as ErrorResponse;
+        toast.error(
+          err?.response?.data?.message ||
+            "Something went wrong. Please try again."
+        );
+        console.error("Download error:", error);
+      },
+    });
   const { data: getCustomerDetails, isLoading } =
     useGetCustomerById(customerId);
   const customerDetails = getCustomerDetails?.data?.data?.customer || {};
@@ -80,6 +84,22 @@ const CustomerDetails = () => {
         { amount: t.amount, type: t.paymentType },
       ])
   );
+
+  const format100thDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const startDate = loanDetails?.loanStartDate
+    ? new Date(loanDetails.loanStartDate)
+    : new Date();
+
+  const after100Days = new Date(startDate);
+  after100Days.setDate(startDate.getDate() + 100);
+
+  const formattedAfter100Days = format100thDate(after100Days);
 
   const formatTransactionDate = (date: Date) => date.toDateString();
   const remainingDates = totalLoanDates.filter(
@@ -136,11 +156,15 @@ const CustomerDetails = () => {
   }
 
   const handleDownloadClick = () => {
-    downloadReportMutate({
-      type: "CUSTOMER BASED",
-      customerId: `${customerDetails?.name} - ${customerDetails?.mobileNumber}`,
-      range: "FULL",
-    });
+    if(last10Transactions?.length != 0){
+      downloadReportMutate({
+        type: "CUSTOMER BASED",
+        customerId: `${customerDetails?.name} - ${customerDetails?.mobileNumber}`,
+        range: "FULL",
+      });
+    } else {
+      toast.error("No transactions available to download report");
+    }
   };
 
   const handleCallClick = () =>
@@ -150,8 +174,13 @@ const CustomerDetails = () => {
     <div className="max-sm:mb-24">
       <Topic title="CUSTOMERS" />
       <CustomerDashboardCard
+        lastDay={
+          loanDetails?.loanStartDate
+            ? `100th day - ${formattedAfter100Days}`
+            : formatDate(new Date(), "dd-MMM-yyyy")
+        }
         amountPaid={customerDetails?.amountPaid}
-        days={TotalLoandaysCount}
+        days={TotalLoandaysCount || 0}
         loanAmount={loanDetails?.loanAmount || 0}
         title={customerDetails?.name}
         yetToReceiveAmount={

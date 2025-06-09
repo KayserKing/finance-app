@@ -37,8 +37,6 @@ const Reports = () => {
       const resData = res as ReportResponse;
 
       const blob = new Blob([resData.data as unknown as string], { type: 'text/csv' });
-      console.log("Download response:", resData);
-
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

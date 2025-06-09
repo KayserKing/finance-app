@@ -3,16 +3,17 @@ import Image from "next/image";
 type TCustomerDashboardCard = {
     title: string;
     days: number;
+    lastDay: string;
     loanAmount: number;
     amountPaid: number;
     yetToReceiveAmount: number;
 }
 
-const CustomerDashboardCard = ({ title, days, loanAmount, amountPaid, yetToReceiveAmount }: TCustomerDashboardCard) => {
+const CustomerDashboardCard = ({ title, days, lastDay, loanAmount, amountPaid, yetToReceiveAmount }: TCustomerDashboardCard) => {
     return <div className="bg-white p-4 max-sm:w-screen max-sm:ml-[-16px]">
         <div className="flex flex-row gap-1 items-bottom ml-6">
             <p className="font-bold">{title}</p>
-            <span className={`text-[10px] mt-[6px]  ${days > 100 ? 'text-red-500' : ''}`}>{days} days</span>
+            <span className={`text-[10px] mt-[6px]  ${days > 100 ? 'text-red-500' : ''}`}>{days} days</span> | <span className={`text-[10px] mt-[6px]`}>{lastDay}</span>
         </div>
         <div className="flex flex-row mt-2">
             <div className="flex flex-row w-full border-r-[1px] border-[#004aad] h-10">

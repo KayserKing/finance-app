@@ -45,6 +45,10 @@ class DashboardService extends ApiService {
     deleteReport = () => {
         return this.post(`reports/delete`)
     }
+
+    deleteCustomer = (id: string) => {
+        return this.delete(`customer/${id}`);
+    }
 }
 
 const dashboardService = new DashboardService();
