@@ -151,7 +151,7 @@ const CustomerCard = ({
           />
 
           {/* Modal Content */}
-          <div className="relative z-10 bg-white rounded p-4 w-[90%] max-w-sm shadow-lg">
+          <div className="relative z-10 bg-white rounded p-4 w-[90%] max-w-sm shadow-lg cursor-default">
             <h2 className="text-md font-semibold mb-2">Confirm Deletion</h2>
             <p className="text-sm text-gray-700 mb-4">
               Are you sure you want to delete this customer and all their
@@ -163,7 +163,7 @@ const CustomerCard = ({
                   e.stopPropagation()
                   setShowConfirmModal(false)
                 }}
-                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm cursor-pointer"
               >
                 Cancel
               </button>
@@ -173,7 +173,7 @@ const CustomerCard = ({
                   handleDelete();
                   setShowConfirmModal(false);
                 }}
-                className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm"
+                className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm cursor-pointer"
               >
                 Delete
               </button>
