@@ -73,7 +73,7 @@ const CustomerDetails = () => {
   );
   const transactionDates = getReceiveTransactionDates(transactionDetails);
   const delayedPaymentsDates = getPaymentsDates(paymentDetails);
-  const last10Transactions = transactionDetails?.reverse();
+  const allTransactions = transactionDetails?.reverse();
   const paidAmountMap = new Map(
     transactionDetails
       .filter(
@@ -156,7 +156,7 @@ const CustomerDetails = () => {
   }
 
   const handleDownloadClick = () => {
-    if(last10Transactions?.length != 0){
+    if(allTransactions?.length != 0){
       downloadReportMutate({
         type: "CUSTOMER BASED",
         customerId: `${customerDetails?.name} - ${customerDetails?.mobileNumber}`,
@@ -195,7 +195,7 @@ const CustomerDetails = () => {
           className="px-2 h-full sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px] !py-1 sm:!py-2"
         />
         <a
-          href={`sms:+91${customerDetails?.mobileNumber}?body=Hello%20${customerDetails?.name},%0AYou%20have%20missed%20your%20payment,%20please%20pay%20now!!`}
+          href={`sms:+91${customerDetails?.mobileNumber}?body=Hello%20${customerDetails?.name},%0AYou%20have%20missed%20your%20payment,%20please%20pay%20now!!%0ATo%20know%20your%20transaction%20details,%20please%20click%20below%20link.%20${process.env.NEXT_PUBLIC_BASE_URL}/customer/${customerId}`}
         >
           <Button
             name="MESSAGE"
@@ -210,7 +210,7 @@ const CustomerDetails = () => {
           className="px-2 sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px]  !py-1"
         />
       </div>
-      {last10Transactions?.length == 0 && (
+      {allTransactions?.length == 0 && (
         <div className="font-bold py-2">
           No Money is given to this person yet
         </div>
@@ -249,11 +249,11 @@ const CustomerDetails = () => {
           )}
         </div>
         <div className="w-full">
-          {last10Transactions?.length > 0 && (
+          {allTransactions?.length > 0 && (
             <p className="font-bold">Transactions History</p>
           )}
-          <div className="flex flex-col gap-3 mt-3">
-            {last10Transactions?.map(
+          <div className="flex flex-col gap-3 mt-3 min-md:h-[calc(100vh-360px)] min-md:overflow-y-scroll">
+            {allTransactions?.map(
               (
                 e: {
                   amount: number;
