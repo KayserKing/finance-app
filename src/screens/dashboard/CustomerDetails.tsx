@@ -170,6 +170,13 @@ const CustomerDetails = () => {
   const handleCallClick = () =>
     (window.location.href = `tel:+91${customerDetails?.mobileNumber}`);
 
+  const smsBody = `Hello ${customerDetails?.name},
+You have missed your payment, please pay now!!
+To know your transaction details, please click below link.
+${process.env.NEXT_PUBLIC_BASE_URL}/customer/${customerId}`;
+
+  const encodedBody = encodeURIComponent(smsBody);
+
   return (
     <div className="max-sm:mb-24">
       <Topic title="CUSTOMERS" />
@@ -194,9 +201,7 @@ const CustomerDetails = () => {
           type="button"
           className="px-2 h-full sm:px-4 w-[90px] sm:w-[150] sm:text-sm text-[12px] !py-1 sm:!py-2"
         />
-        <a
-          href={`sms:+91${customerDetails?.mobileNumber}?body=Hello%20${customerDetails?.name},%0AYou%20have%20missed%20your%20payment,%20please%20pay%20now!!%0ATo%20know%20your%20transaction%20details,%20please%20click%20below%20link.%20${process.env.NEXT_PUBLIC_BASE_URL}/customer/${customerId}`}
-        >
+        <a href={`sms:+91${customerDetails?.mobileNumber}?body=${encodedBody}`}>
           <Button
             name="MESSAGE"
             type="button"

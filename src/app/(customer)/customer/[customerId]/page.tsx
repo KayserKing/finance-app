@@ -13,9 +13,14 @@ const Customer = () => {
     useGetCustomerById(customerId);
     const transactionDetails = getCustomerDetails?.data?.data?.transactions || [];
     const allTransactions = transactionDetails?.reverse();
+    console.log(getCustomerDetails?.data.data.customer);
+    
     return <div className="p-4">
       <p className="font-bold">Hi, {getCustomerDetails?.data?.data?.customer?.name?.toUpperCase()}</p>
       <p className="font-bold">YOUR TRANSACTION</p>
+      <p className="font-bold text-xs">TOTAL LOAN AMOUNT: {getCustomerDetails?.data?.data?.customer?.loanIds?.[0]?.loanAmount || 0}</p>
+      <p className="font-bold text-xs">TOTAL PAID: {getCustomerDetails?.data?.data?.customer?.amountPaid || 0}</p>
+      <p className="font-bold text-xs">TOTAL BALANCE: {getCustomerDetails?.data?.data?.customer?.loanIds?.[0]?.loanAmount - getCustomerDetails?.data?.data?.customer?.amountPaid || 0}</p>
       <div className="flex flex-col gap-3 mt-3">
             {allTransactions?.map(
               (
